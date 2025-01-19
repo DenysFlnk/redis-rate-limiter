@@ -26,7 +26,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Testcontainers
 @SpringBootTest
-@ActiveProfiles("test")
 @TestMethodOrder(MethodOrderer.MethodName.class)
 class RedisRateLimiterIntegrationTests {
 
@@ -128,6 +127,7 @@ class RedisRateLimiterIntegrationTests {
     }
 
     @Nested
+    @TestMethodOrder(MethodOrderer.MethodName.class)
     @DisplayName("[Optional tests]:")
     class MultithreadedTests {
         @Test
@@ -152,7 +152,7 @@ class RedisRateLimiterIntegrationTests {
 
             for (int i = 0; i < 10; i++) {
                 assertDoesNotThrow(() -> rateLimiter.isAllowed(userId));
-                Thread.sleep(1000);
+                Thread.sleep(1100);
             }
         }
 

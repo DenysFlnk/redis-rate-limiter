@@ -38,12 +38,6 @@ public class SlidingWindowRateLimiter implements RateLimiter {
         this.windowSizeMs = windowSizeMs;
     }
 
-    /*
-       ZADD
-       ZREMRANGEBYSCORE
-       ZCARD
-    */
-
     /**
      * Checks if the user is allowed to make a request within the sliding window rate limit.
      *
