@@ -163,7 +163,7 @@ class RedisRateLimiterIntegrationTests {
             String userId = UUID.randomUUID().toString();
             for (int i = 0; i < 6; i++) {
                 assertDoesNotThrow(() -> rateLimiter.isAllowed(userId));
-                Thread.sleep(10000);
+                Thread.sleep(10100);
             }
         }
     }
