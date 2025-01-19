@@ -44,7 +44,7 @@ public class SlidingWindowRateLimiter implements RateLimiter {
      * TODO Steps:
      *   1. Get a Redis connection from JedisPool.
      *   2. Generate a unique key using userId, window size, and maxHits.
-     *   3. Add a new entry to a sorted set with the current timestamp.
+     *   3. Add a new entry to a sorted set with the current timestamp and unique value (use timestamp and random number combination)
      *   4. Remove entries older than the sliding window size.
      *   5. Count the number of entries in the sorted set.
      *   6. If the count exceeds maxHits, throw RateLimiterExceededException.

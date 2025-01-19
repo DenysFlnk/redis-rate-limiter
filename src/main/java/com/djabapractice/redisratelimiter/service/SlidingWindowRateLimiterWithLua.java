@@ -29,6 +29,8 @@ public class SlidingWindowRateLimiterWithLua implements RateLimiter {
             //      7. `ZCARD key`: Returns the number of elements in the sorted set.
             //      8. `if condition then ... elseif condition then ... else ... end`: Defines conditional logic.
             //      9. Return values (e.g., 0 for limit exceeded, 1 for allowed).
+            //      10. Add a new entry to a sorted set with the current timestamp and unique value (use timestamp
+            //      and random number combination (math.random()))
             "-- TODO: Replace this comment with the Lua script.";
 
     /**
