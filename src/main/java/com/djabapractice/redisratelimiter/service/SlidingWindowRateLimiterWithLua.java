@@ -62,6 +62,6 @@ public class SlidingWindowRateLimiterWithLua implements RateLimiter {
      **/
     @Override
     public void isAllowed(String userId) {
-
+        throw new RuntimeException("Not Implemented");
     }
 }
