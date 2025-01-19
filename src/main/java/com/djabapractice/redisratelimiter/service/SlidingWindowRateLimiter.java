@@ -52,7 +52,7 @@ public class SlidingWindowRateLimiter implements RateLimiter {
             String key = RedisKeySchema.getSlidingRateLimiterKey("limiter", userId, windowSizeMs, maxHits);
 
             long timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
-            transaction.zadd(key, timestamp, timestamp + "-" + userId);
+            transaction.zadd(key, timestamp, timestamp + "-" + Math.random());
             transaction.zremrangeByScore(key, 0, timestamp - windowSizeMs);
             Response<Long> numberOfHits = transaction.zcard(key);
             transaction.exec();

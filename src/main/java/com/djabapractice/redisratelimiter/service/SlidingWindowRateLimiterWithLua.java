@@ -27,7 +27,7 @@ public class SlidingWindowRateLimiterWithLua implements RateLimiter {
                     "if hits >= maxHits then " +
                     "  return 0 " +
                     "else " +
-                    "  redis.call('ZADD', key, currentTime, currentTime) " +
+                    "  redis.call('ZADD', key, currentTime, currentTime .. \"-\" .. math.random()) " +
                     "  return 1 " +
                     "end";
 
