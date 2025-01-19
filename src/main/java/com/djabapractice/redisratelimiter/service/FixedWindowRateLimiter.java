@@ -41,37 +41,35 @@ public class FixedWindowRateLimiter implements RateLimiter {
     }
 
     /**
-     * Checks if the user is allowed to make a request within the rate limit.
+     * Checks if the user is allowed within the current fixed window.
+     * <p>
+     * TODO Steps:
+     *   1. Get a Redis connection from JedisPool.
+     *   2. Generate a unique key using userId, minute block, and maxHits.
+     *   3. Increment the hit count in Redis for the key.
+     *   4. Set expiration time for the key.
+     *   5. Check if the hit count exceeds the maxHits.
+     *   6. If exceeded, throw RateLimiterExceededException.
+     *   7. Handle exceptions and ensure resources are closed properly.
      *
-     * @param userId The user ID.
-     * @throws RateLimiterExceededException if the user exceeds the allowed number of requests.
+     * @param userId the user ID to check
      */
     @Override
     public void isAllowed(String userId) {
-        try (Jedis jedis = jedisPool.getResource();
-             Transaction transaction = jedis.multi()) {
-
-            String key = RedisKeySchema.getFixedRateLimiterKey(userId, getMinuteBlock(ZonedDateTime.now()), maxHits);
-            Response<Long> numberOfHits = transaction.incr(key);
-            transaction.expire(key, expirationInSeconds);
-            transaction.exec();
-
-            if (numberOfHits.get() > maxHits) {
-                throw new RateLimiterExceededException();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        throw new RuntimeException("Not Implemented!");
     }
 
     /**
-     * Calculates the current minute block based on the time.
+     * Calculates the minute block for the given time.
+     * <p>
+     * TODO Steps:
+     * 1. Calculate the current minute of the day.
+     * 2. Divide the minute by intervalInMinutes to get the block.
      *
-     * @param time The current ZonedDateTime.
-     * @return The minute block as an integer.
+     * @param time the time to calculate the block
+     * @return the minute block
      */
     private int getMinuteBlock(ZonedDateTime time) {
-        int currentMinuteOfDay = time.getHour() * 60 + time.getMinute();
-        return currentMinuteOfDay / intervalInMinutes;
+        throw new RuntimeException("Not Implemented!");
     }
 }

@@ -38,36 +38,22 @@ public class SlidingWindowRateLimiter implements RateLimiter {
         this.windowSizeMs = windowSizeMs;
     }
 
-    /*
-       ZADD
-       ZREMRANGEBYSCORE
-       ZCARD
-    */
-
     /**
-     * Checks if the user is allowed to make a request within the sliding window rate limit.
+     * Checks if the user is allowed within the current sliding window.
+     * <p>
+     * TODO Steps:
+     *   1. Get a Redis connection from JedisPool.
+     *   2. Generate a unique key using userId, window size, and maxHits.
+     *   3. Add a new entry to a sorted set with the current timestamp.
+     *   4. Remove entries older than the sliding window size.
+     *   5. Count the number of entries in the sorted set.
+     *   6. If the count exceeds maxHits, throw RateLimiterExceededException.
+     *   7. Handle exceptions and ensure resources are closed properly.
      *
-     * @param userId The user ID.
-     * @throws RateLimiterExceededException if the user exceeds the allowed number of requests.
+     * @param userId the user ID to check
      */
     @Override
     public void isAllowed(String userId) {
-        try (Jedis jedis = jedisPool.getResource();
-             Transaction transaction = jedis.multi()) {
-
-            String key = RedisKeySchema.getSlidingRateLimiterKey("limiter", userId, windowSizeMs, maxHits);
-
-            long timestamp = ZonedDateTime.now().toInstant().toEpochMilli();
-            transaction.zadd(key, timestamp, timestamp + "-" + userId);
-            transaction.zremrangeByScore(key, 0, timestamp - windowSizeMs);
-            Response<Long> numberOfHits = transaction.zcard(key);
-            transaction.exec();
-
-            if (numberOfHits.get() > maxHits) {
-                throw new RateLimiterExceededException();
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        throw new RuntimeException("Not Implemented!");
     }
 }
