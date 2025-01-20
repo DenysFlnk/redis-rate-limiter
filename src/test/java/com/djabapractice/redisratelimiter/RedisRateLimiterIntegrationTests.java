@@ -14,11 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.ComposeContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import redis.clients.jedis.JedisPool;
 
+import java.io.File;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
@@ -31,8 +32,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 class RedisRateLimiterIntegrationTests {
 
     @Container
-    private static final GenericContainer<?> redisContainer =
-            new GenericContainer<>("redis:latest").withExposedPorts(6379);
+    private static final ComposeContainer redisContainer =
+            new ComposeContainer(new File("docker-compose.yml"))
+                    .withExposedService("redis", 6379);
 
     private JedisPool jedisPool;
 
@@ -48,7 +50,8 @@ class RedisRateLimiterIntegrationTests {
 
     @BeforeEach
     void init() {
-        jedisPool = new JedisPool(redisContainer.getHost(), redisContainer.getMappedPort(6379));
+        jedisPool = new JedisPool(redisContainer.getServiceHost("redis", 6379),
+                redisContainer.getServicePort("redis", 6379));
     }
 
     @Test
