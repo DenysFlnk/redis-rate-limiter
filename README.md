@@ -17,8 +17,6 @@ The goal of this project is to create a rate-limiting mechanism that controls th
 
 ## Implementation Order
 1. **Fixed Window Rate Limiter**
-
 2. **Sliding Window Rate Limiter**
-
 3. **Sliding Window Rate Limiter with Lua Script**
 
