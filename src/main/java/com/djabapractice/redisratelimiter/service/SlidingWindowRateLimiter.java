@@ -2,15 +2,13 @@ package com.djabapractice.redisratelimiter.service;
 
 import com.djabapractice.redisratelimiter.exception.RateLimiterExceededException;
 import com.djabapractice.redisratelimiter.util.RedisKeySchema;
+import java.time.Instant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
-
-import java.io.IOException;
-import java.time.ZonedDateTime;
 
 /**
  * A Sliding Window Rate Limiter that allows rate limiting with granularity using timestamps.
@@ -41,19 +39,23 @@ public class SlidingWindowRateLimiter implements RateLimiter {
     /**
      * Checks if the user is allowed within the current sliding window.
      * <p>
-     * TODO Steps:
-     *   1. Get a Redis connection from JedisPool.
-     *   2. Generate a unique key using userId, window size, and maxHits.
-     *   3. Add a new entry to a sorted set with the current timestamp and unique value (use timestamp and random number combination)
-     *   4. Remove entries older than the sliding window size.
-     *   5. Count the number of entries in the sorted set.
-     *   6. If the count exceeds maxHits, throw RateLimiterExceededException.
-     *   7. Handle exceptions and ensure resources are closed properly.
-     *
      * @param userId the user ID to check
      */
     @Override
     public void isAllowed(String userId) {
-        throw new RuntimeException("Not Implemented!");
+        try (Jedis jedis = jedisPool.getResource()) {
+            String key = RedisKeySchema.getSlidingRateLimiterKey("limiter", userId, windowSizeMs, maxHits);
+
+            Transaction transaction = jedis.multi();
+            long currentMillis = Instant.now().toEpochMilli();
+            transaction.zadd(key, currentMillis,currentMillis + "-" + Math.random());
+            transaction.zremrangeByScore(key, 0, currentMillis - (double) windowSizeMs);
+            Response<Long> count = transaction.zcard(key);
+            transaction.exec();
+
+            if (count.get() > maxHits) {
+                throw new RateLimiterExceededException();
+            }
+        }
     }
 }
